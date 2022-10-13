@@ -1,0 +1,9 @@
+---
+- hosts: all
+  gather_facts: true
+
+  tasks:
+    - name: Set DOCKER_HOST
+      ansible.builtin.shell: |
+        export DOCKER_HOST="unix://$HOME/.colima/docker.sock"
+...

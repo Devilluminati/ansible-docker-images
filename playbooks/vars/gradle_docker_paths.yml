@@ -1,0 +1,4 @@
+---
+gradle_path:
+  - path/to/docker/jib/gradle/file
+...

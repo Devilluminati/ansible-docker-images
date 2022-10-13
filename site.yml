@@ -1,0 +1,6 @@
+- import_playbook: playbooks/git.yml
+- import_playbook: playbooks/pre_build.yml
+- import_playbook: playbooks/set_docker_host.yml
+- import_playbook: playbooks/build_image.yml
+- import_playbook: playbooks/post_build.yml
+#- import_playbook: playbooks/docker_compose.yml

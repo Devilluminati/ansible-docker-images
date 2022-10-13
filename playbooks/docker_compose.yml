@@ -1,0 +1,17 @@
+---
+- hosts: all
+  gather_facts: true
+  vars_files:
+    - vars/docker_compose_paths.yml
+
+  tasks:      
+    - name: Start Container
+      docker_compose:
+        project_src: "{{ item.path }}/{{ item.name }}"
+        state: present
+      loop: "{{ compose_path }}"
+      register: output
+
+    - debug:
+        var: output
+...

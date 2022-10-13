@@ -1,0 +1,38 @@
+---
+- hosts: all
+  gather_facts: true
+  become: false
+  vars_files:
+    - vars/git_paths.yml
+    - vars/secrets.yml
+
+  tasks:
+    - name: Check if repository exists
+      ansible.builtin.stat:
+        path: "{{ item.path }}"
+      loop: "{{ git_path }}"
+      register: dir_to_check
+
+    - name: Print out
+      debug: var=dir_to_check
+
+    - name: Report if directory not exists
+      debug:
+        msg: "The directory {{ item.path }} does not exist"
+      loop: "{{ git_path }}"
+      loop_control:
+        index_var: info_index
+      when: 
+        - not dir_to_check.results[info_index].stat.exists
+
+    - name: Git clone repository
+      ansible.builtin.git:
+        repo: "{{ item.git }}"
+        dest: "{{ item.path }}"
+        key_file: "{{ ssh_key_file_location }}"
+      loop: "{{ git_path }}"
+      loop_control:
+        index_var: info_index
+      when:
+        - not dir_to_check.results[info_index].stat.exists
+...

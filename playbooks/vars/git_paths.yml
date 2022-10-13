@@ -1,0 +1,6 @@
+---
+git_path:
+  - name: example-service
+    path: path/to/git/repository/on/local/machine
+    git: path/for/git/remote/repository
+...

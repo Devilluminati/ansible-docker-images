@@ -1,0 +1,14 @@
+---
+- hosts: all
+  gather_facts: true
+  vars_files:
+    - vars/gradle_docker_paths.yml
+
+  tasks:      
+    - name: Revert changes in JIB Base Image
+      ansible.builtin.lineinfile:
+        path: "{{ item }}"
+        search_string: 'serach-string'
+        line: 'replace-string'
+      with_items: "{{ gradle_path }}"
+...

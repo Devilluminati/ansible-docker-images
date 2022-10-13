@@ -1,0 +1,68 @@
+---
+- hosts: all
+  gather_facts: true
+  vars_files:
+    - vars/gradle_docker_paths.yml
+    - vars/dockerfile_paths.yml
+    - vars/services.yml
+    - vars/java8_services.yml
+    - vars/java_paths.yml
+
+  tasks:
+    - name: Check if Image exists
+      docker_image_info:
+        name: "{{ item.name }}"
+      loop: "{{ docker_path }}"
+      register: result_docker
+
+    - name: Print out
+      debug: var=result_docker
+
+    - name: Build Container Image from Dockerfile
+      community.docker.docker_image:
+        name: "{{ item.name }}"
+        source: build
+        build:
+          path: "{{ item.path }}"
+        state: present
+      loop: "{{ docker_path }}"
+      loop_control:
+        index_var: info_index
+      when:
+        -  result_docker.results[info_index].images | length == 0
+
+    - name: Check if Image exists
+      docker_image_info:
+        name: "{{ item.name }}"
+      loop: "{{ services }}"
+      register: result_gradle
+
+    - name: Print out
+      debug: var=result_gradle
+
+    - name: Build Container Image with JIB and Gradle
+      ansible.builtin.shell: ./gradlew jibDockerBuild
+      environment:
+        JAVA_HOME: "{{ java_paths.java11.path }}"
+      args:
+        chdir: "{{ item.path }}"
+      loop: "{{ services }}"
+      loop_control:
+        index_var: info_index
+      when:
+        - result_gradle.results[info_index].images | length == 0
+        - not item.name in java8_services
+    
+    - name: Build Container Image with JIB and Gradle especially with Java 8
+      ansible.builtin.shell: ./gradlew jibDockerBuild
+      environment:
+        JAVA_HOME: "{{ java_paths.java8.path }}"
+      args:
+        chdir: "{{ item.path }}"
+      loop: "{{ services }}"
+      loop_control:
+        index_var: info_index
+      when:
+        - result_gradle.results[info_index].images | length == 0
+        - item.name in java8_services
+...

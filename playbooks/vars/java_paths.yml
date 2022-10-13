@@ -1,0 +1,7 @@
+---
+java_paths:
+  java8:
+    path: path/to/java/8/lib
+  java11:
+    path: path/to/java/11/lib
+...

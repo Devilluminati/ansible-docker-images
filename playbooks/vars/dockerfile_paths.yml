@@ -1,0 +1,5 @@
+---
+docker_path:
+  - name: example-service
+    path: path/to/Dockerfile
+...
